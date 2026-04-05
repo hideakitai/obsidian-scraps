@@ -1,0 +1,545 @@
+.scraps-input-body > .scraps-hidden,
+.scraps-input-body > .cm-editor.scraps-hidden,
+.scraps-memo-card .scraps-hidden {
+  display: none !important;
+}
+
+.scraps-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--size-4-2);
+  gap: var(--size-4-2);
+}
+
+.scraps-input-container {
+  flex-shrink: 0;
+  padding: var(--size-4-2);
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+}
+
+/* Editor/Preview shared container */
+.scraps-input-body {
+  min-height: 80px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+.scraps-input-body .cm-editor {
+  background-color: var(--background-primary);
+}
+
+.scraps-input-body .cm-editor .cm-content {
+  padding: var(--size-4-2);
+  caret-color: var(--text-normal);
+}
+
+.scraps-input-body .cm-editor .cm-cursor {
+  border-left-color: var(--text-normal);
+}
+
+/* Preview mode */
+.scraps-preview {
+  padding: var(--size-4-2);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.scraps-button-row {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  margin-top: var(--size-4-1);
+}
+
+.scraps-button-spacer {
+  flex: 1;
+}
+
+/* Unified button sizing for button row */
+.scraps-button-row button {
+  font-size: var(--font-ui-small);
+  padding: var(--size-4-1) var(--size-4-3);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+}
+
+/* Edit/Preview mode badge */
+.scraps-mode-badge {
+  display: inline-block;
+  font-size: var(--font-ui-small);
+  padding: var(--size-2-3) var(--size-4-3);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--background-modifier-hover);
+  color: var(--text-muted);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.scraps-mode-badge:hover {
+  background-color: var(--background-modifier-border);
+  color: var(--text-normal);
+}
+
+.scraps-mode-badge.is-preview-mode {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.scraps-mode-badge.is-preview-mode:hover {
+  opacity: 0.85;
+}
+
+.scraps-submit-btn:focus-visible,
+.scraps-mode-badge:focus-visible,
+.scraps-load-more:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 2px;
+}
+
+.scraps-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-1);
+  flex-shrink: 0;
+}
+
+.scraps-date-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 150ms ease;
+}
+
+.scraps-date-toggle:hover {
+  color: var(--text-normal);
+}
+
+.scraps-date-toggle.is-active {
+  color: var(--interactive-accent);
+}
+
+.scraps-date-toggle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.scraps-filter-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-1);
+  max-height: 100px;
+  opacity: 1;
+  overflow: hidden;
+  transition:
+    max-height 200ms ease,
+    opacity 150ms ease,
+    margin-top 200ms ease;
+  margin-top: var(--size-4-1);
+  padding: 12px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.scraps-filter-content.is-collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+  padding: 0 12px;
+  border: none;
+}
+
+.scraps-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(var(--interactive-accent-rgb), 0.08);
+  border-radius: 6px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.scraps-search-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.scraps-search-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.scraps-search-wrapper input.scraps-search {
+  flex: 1;
+  padding-left: 4px;
+  border: none;
+  background-color: transparent;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+}
+
+.scraps-date-range {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-1);
+}
+
+.scraps-date-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scraps-date-label {
+  flex-shrink: 0;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+}
+
+.scraps-date-group input.scraps-date-input {
+  flex: 1;
+  background-color: rgba(var(--interactive-accent-rgb), 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  color: var(--text-normal);
+  font-size: var(--font-ui-smaller);
+}
+
+.scraps-timeline {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.scraps-date-header {
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  border-left: 3px solid var(--interactive-accent);
+  padding: var(--size-4-1) var(--size-4-2);
+  margin-top: var(--size-4-3);
+  margin-bottom: var(--size-4-1);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-s);
+}
+
+.scraps-date-header:first-child {
+  margin-top: 0;
+}
+
+.scraps-memo-card {
+  padding: var(--size-4-2);
+  border-radius: var(--radius-s);
+  margin-bottom: var(--size-4-1);
+}
+
+.scraps-memo-card:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.scraps-memo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--size-4-1);
+}
+
+.scraps-memo-time {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+}
+
+.scraps-memo-header-actions {
+  display: flex;
+  gap: var(--size-4-1);
+}
+
+.scraps-memo-edit {
+  opacity: 0;
+  transition: opacity 150ms ease;
+  color: var(--text-muted);
+}
+
+.scraps-memo-card:hover .scraps-memo-edit {
+  opacity: 1;
+}
+
+.scraps-memo-edit:hover {
+  color: var(--text-accent);
+}
+
+.scraps-memo-link {
+  opacity: 0;
+  transition: opacity 150ms ease;
+  color: var(--text-muted);
+}
+
+.scraps-memo-card:hover .scraps-memo-link {
+  opacity: 1;
+}
+
+.scraps-memo-link:hover {
+  color: var(--text-accent);
+}
+
+.scraps-memo-copy {
+  opacity: 0;
+  transition: opacity 150ms ease;
+  color: var(--text-muted);
+}
+
+.scraps-memo-card:hover .scraps-memo-copy {
+  opacity: 1;
+}
+
+.scraps-memo-copy:hover {
+  color: var(--text-accent);
+}
+
+.scraps-memo-delete {
+  opacity: 0;
+  transition: opacity 150ms ease;
+  color: var(--text-muted);
+}
+
+.scraps-memo-card:hover .scraps-memo-delete {
+  opacity: 1;
+}
+
+.scraps-memo-delete:hover {
+  color: var(--text-error);
+}
+
+.scraps-memo-body {
+  padding: var(--size-4-1) 0 0 !important;
+}
+
+.scraps-memo-body p,
+.scraps-memo-body ul,
+.scraps-memo-body ol,
+.scraps-memo-body blockquote,
+.scraps-memo-body h1,
+.scraps-memo-body h2,
+.scraps-memo-body h3,
+.scraps-memo-body h4,
+.scraps-memo-body h5,
+.scraps-memo-body h6 {
+  margin-top: 0.25em !important;
+  margin-bottom: 0.25em !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.scraps-memo-body hr {
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.scraps-memo-body pre {
+  margin-top: 0.4em !important;
+  margin-bottom: 0.4em !important;
+}
+
+.scraps-memo-body > *:first-child {
+  margin-top: 0 !important;
+}
+
+.scraps-memo-body > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+.scraps-memo-body pre {
+  position: relative;
+}
+
+.scraps-memo-body pre > button.copy-code-button {
+  position: absolute;
+  top: var(--size-4-1);
+  right: var(--size-4-1);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.scraps-memo-body pre:hover > button.copy-code-button {
+  opacity: 1;
+}
+
+.scraps-memo-card.is-editing {
+  background-color: var(--background-modifier-hover);
+}
+
+.scraps-memo-editor-wrapper {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+.scraps-memo-editor-wrapper .cm-editor {
+  background-color: var(--background-primary);
+}
+
+.scraps-memo-editor-wrapper .cm-editor .cm-content {
+  padding: var(--size-4-2);
+  caret-color: var(--text-normal);
+}
+
+.scraps-memo-editor-wrapper .cm-editor .cm-cursor {
+  border-left-color: var(--text-normal);
+}
+
+.scraps-memo-edit-preview {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding: var(--size-4-2);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.scraps-memo-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-1);
+  margin-top: var(--size-4-1);
+}
+
+.scraps-memo-edit-actions .scraps-button-spacer {
+  flex: 1;
+  display: flex;
+  gap: var(--size-4-1);
+  justify-content: flex-end;
+}
+
+.scraps-memo-edit-actions button {
+  font-size: var(--font-ui-small);
+  padding: var(--size-4-1) var(--size-4-3);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+}
+
+.scraps-capture-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+}
+
+.scraps-capture-editor {
+  min-height: 120px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+.scraps-capture-editor .cm-editor {
+  background-color: var(--background-primary);
+  max-height: 50vh;
+}
+
+.scraps-capture-editor .cm-editor .cm-content {
+  padding: var(--size-4-2);
+  caret-color: var(--text-normal);
+}
+
+.scraps-capture-editor .cm-editor .cm-cursor {
+  border-left-color: var(--text-normal);
+}
+
+.scraps-capture-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--size-4-1);
+}
+
+.scraps-capture-buttons button {
+  font-size: var(--font-ui-small);
+  padding: var(--size-4-1) var(--size-4-3);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+}
+
+.scraps-load-more {
+  width: 100%;
+  text-align: center;
+  margin-top: var(--size-4-1);
+}
+
+/* Mobile: button that opens CaptureModal */
+.scraps-new-scrap-btn {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Mobile: kebab menu button */
+.scraps-memo-more {
+  color: var(--text-muted);
+}
+
+.scraps-memo-more:hover {
+  color: var(--text-accent);
+}
+
+/* Mobile: prevent Load More / last card from being hidden by bottom ribbon */
+body.is-mobile .scraps-timeline {
+  padding-bottom: calc(var(--size-4-4) + env(safe-area-inset-bottom, 0px));
+}
+
+body.is-mobile .scraps-memo-body pre > button.copy-code-button {
+  opacity: 1;
+}
+
+/* Mobile: ensure editing card buttons are not hidden behind the keyboard */
+body.is-mobile .scraps-memo-card.is-editing {
+  padding-bottom: var(--size-4-4);
+}
+
+/* Mobile: allow scrolling the last line above the keyboard in EditModal */
+body.is-mobile .scraps-edit-mode .scraps-capture-editor .cm-editor .cm-content {
+  padding-bottom: 40vh;
+}
+
+/* Mobile: make editor fill remaining modal space via flex */
+body.is-mobile .scraps-edit-modal .scraps-capture-editor {
+  flex: 1;
+  min-height: 0;
+}
+
+body.is-mobile .scraps-edit-modal .scraps-capture-editor .cm-editor {
+  height: 100%;
+  max-height: none;
+}
+
+/* EditModal: compact header with title + buttons inline */
+.scraps-edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--size-4-2);
+}
+
+.scraps-edit-title {
+  font-weight: var(--font-semibold);
+  font-size: var(--font-ui-medium);
+}
+
+.scraps-edit-header .scraps-capture-buttons {
+  margin: 0;
+}
+
+/* Mobile: position EditModal at top to avoid keyboard overlap */
+body.is-mobile .scraps-edit-modal {
+  align-self: flex-start;
+  margin-top: 2vh;
+  height: 55vh;
+}
