@@ -240,7 +240,7 @@
 }
 
 .scraps-memo-card {
-  padding: var(--size-4-2);
+  padding: var(--size-4-2) var(--size-4-6);
   border-radius: var(--radius-s);
   margin-bottom: var(--size-4-1);
 }
@@ -337,20 +337,20 @@
 .scraps-memo-body h4,
 .scraps-memo-body h5,
 .scraps-memo-body h6 {
-  margin-top: 0.25em !important;
-  margin-bottom: 0.25em !important;
+  margin-top: 0.7em !important;
+  margin-bottom: 0.7em !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
 
 .scraps-memo-body hr {
-  margin-top: 0.5em !important;
-  margin-bottom: 0.5em !important;
+  margin-top: 0.9em !important;
+  margin-bottom: 0.9em !important;
 }
 
 .scraps-memo-body pre {
-  margin-top: 0.4em !important;
-  margin-bottom: 0.4em !important;
+  margin-top: 0.9em !important;
+  margin-bottom: 0.9em !important;
 }
 
 .scraps-memo-body > *:first-child {
