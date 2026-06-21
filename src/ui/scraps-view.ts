@@ -3,6 +3,7 @@ import type ScrapsPlugin from "../main";
 import { Memo } from "../types";
 import { dateToFilePath, formatDateForDisplay, getDateRange, getDateRangeBetween } from "../utils/date-utils";
 import { parseMemos } from "../core/memo-parser";
+import { getMemoStateKey } from "../core/hidden-state";
 import { findSectionRange } from "../core/section-locator";
 import { getDailyNoteFile, getDailyNotesConfig } from "../core/daily-notes";
 import { MemoWriter } from "../core/memo-writer";
@@ -352,6 +353,16 @@ export class ScrapsView extends ItemView {
           confirmBeforeDelete: value,
         };
         void this.plugin.saveSettings();
+      },
+      isHidden: (m) =>
+        this.plugin.isMemoHidden(getMemoStateKey(m, dateToFilePath(m.date, this.dailyNotesFolder))),
+      onToggleHidden: (m) => {
+        void this.plugin
+          .toggleHiddenMemo(getMemoStateKey(m, dateToFilePath(m.date, this.dailyNotesFolder)))
+          .then(() => this.renderTimeline())
+          .catch((e: unknown) => {
+            console.error("Scraps: failed to toggle hidden state", e);
+          });
       },
       dateFormat: this.plugin.settings.dateDisplayFormat,
       draft: draftCallbacks,

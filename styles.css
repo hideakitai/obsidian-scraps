@@ -323,6 +323,25 @@
   color: var(--text-error);
 }
 
+.scraps-memo-hide {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  color: var(--text-muted);
+}
+
+.scraps-memo-card:hover .scraps-memo-hide,
+.scraps-memo-card.is-hidden .scraps-memo-hide {
+  opacity: 1;
+}
+
+.scraps-memo-collapsed {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .scraps-memo-body {
   padding: var(--size-4-1) 0 0 !important;
 }

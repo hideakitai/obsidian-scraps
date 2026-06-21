@@ -5,6 +5,7 @@ import { EditorState } from "@codemirror/state";
 // eslint-disable-next-line import/no-extraneous-dependencies -- provided by Obsidian at runtime
 import { EditorView } from "@codemirror/view";
 import { Memo } from "../types";
+import { getMemoFirstLine } from "../core/hidden-state";
 import { formatDateTimeForDisplay } from "../utils/date-utils";
 import { createMemoEditorExtensions } from "./editor-factory";
 import { EditModal } from "./edit-modal";
@@ -23,6 +24,8 @@ export interface MemoCardCallbacks {
   readonly onCopyLink: (memo: Memo) => Promise<boolean>;
   readonly getConfirmBeforeDelete: () => boolean;
   readonly setConfirmBeforeDelete: (value: boolean) => void;
+  readonly isHidden: (memo: Memo) => boolean;
+  readonly onToggleHidden: (memo: Memo) => void;
   readonly dateFormat?: string;
   readonly draft?: MemoCardDraftCallbacks;
 }
@@ -61,6 +64,24 @@ export function renderMemoCard(
   const headerActionsEl = headerEl.createDiv({
     cls: "scraps-memo-header-actions",
   });
+
+  const hidden = callbacks.isHidden(memo);
+  if (hidden) card.addClass("is-hidden");
+
+  const hideBtn = headerActionsEl.createEl("button", {
+    cls: "scraps-memo-hide clickable-icon",
+    attr: { "aria-label": hidden ? "Show scrap" : "Hide scrap" },
+  });
+  setIcon(hideBtn, hidden ? "eye" : "eye-off");
+  hideBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    callbacks.onToggleHidden(memo);
+  });
+
+  if (hidden) {
+    card.createDiv({ cls: "scraps-memo-collapsed", text: getMemoFirstLine(memo) });
+    return card;
+  }
 
   function handleCopy(): void {
     void navigator.clipboard
