@@ -50,4 +50,5 @@ export const DEFAULT_DRAFTS: DraftState = {
 export interface PluginData {
   readonly settings: ScrapsSettings;
   readonly drafts: DraftState;
+  readonly hiddenMemos: readonly string[];
 }

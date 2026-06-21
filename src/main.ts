@@ -10,6 +10,7 @@ const DRAFT_DEBOUNCE_MS = 500;
 export default class ScrapsPlugin extends Plugin {
   settings: ScrapsSettings = DEFAULT_SETTINGS;
   private drafts: DraftState = DEFAULT_DRAFTS;
+  private hiddenMemos: Set<string> = new Set();
   private readonly debouncedSavePluginData: Debouncer<[], void> = debounce(
     () => {
       void this.savePluginData();
@@ -73,11 +74,13 @@ export default class ScrapsPlugin extends Plugin {
       const data = raw as Partial<PluginData>;
       this.settings = { ...DEFAULT_SETTINGS, ...(data.settings ?? {}) };
       this.drafts = { ...DEFAULT_DRAFTS, ...(data.drafts ?? {}) };
+      this.hiddenMemos = new Set(data.hiddenMemos ?? []);
     } else {
       // Legacy flat format: settings at root level
       const legacy = (raw ?? {}) as Partial<ScrapsSettings>;
       this.settings = { ...DEFAULT_SETTINGS, ...legacy };
       this.drafts = { ...DEFAULT_DRAFTS };
+      this.hiddenMemos = new Set();
     }
 
     // Migrate old sectionHeading format (without #)
@@ -91,7 +94,20 @@ export default class ScrapsPlugin extends Plugin {
   }
 
   private async savePluginData(): Promise<void> {
-    await this.saveData({ settings: this.settings, drafts: this.drafts });
+    await this.saveData({ settings: this.settings, drafts: this.drafts, hiddenMemos: [...this.hiddenMemos] });
+  }
+
+  isMemoHidden(key: string): boolean {
+    return this.hiddenMemos.has(key);
+  }
+
+  async toggleHiddenMemo(key: string): Promise<void> {
+    if (this.hiddenMemos.has(key)) {
+      this.hiddenMemos.delete(key);
+    } else {
+      this.hiddenMemos.add(key);
+    }
+    await this.savePluginData();
   }
 
   async saveSettings(): Promise<void> {
