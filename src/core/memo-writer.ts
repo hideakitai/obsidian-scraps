@@ -1,7 +1,8 @@
-import { App, EventRef, TFile, Notice } from "obsidian";
+import { App, EventRef, TFile, Notice, moment } from "obsidian";
 import { Memo, ScrapsSettings } from "../types";
 import { getCurrentTime, formatDateYMD, dateToFilePath } from "../utils/date-utils";
 import { getDailyNotesConfig, getDailyNoteFile } from "./daily-notes";
+import { renderTemplateFallback } from "./template-render";
 import { confirm } from "../ui/confirm-modal";
 import { CODE_FENCE_RE, TAB_INDENT_RE, SPACE_INDENT_RE } from "./memo-parser";
 
@@ -38,7 +39,12 @@ export class MemoWriter {
           return;
         }
       }
-      file = await this.createDailyNote(config.folder, today, settings.sectionHeading);
+      file = await this.createDailyNote(
+        config.folder,
+        today,
+        settings.sectionHeading,
+        config.template,
+      );
     }
 
     const time = getCurrentTime(settings.timeFormat);
@@ -252,23 +258,100 @@ export class MemoWriter {
     return lines.join("\n");
   }
 
-  private async createDailyNote(folder: string, date: string, sectionHeading: string): Promise<TFile> {
+  private async createDailyNote(
+    folder: string,
+    date: string,
+    sectionHeading: string,
+    templatePath: string,
+  ): Promise<TFile> {
     const path = dateToFilePath(date, folder);
 
+    // Templater auto-trigger on: creating the file fires the folder template
+    // automatically, so an empty file plus a wait is enough.
     if (this.isTemplaterAutoEnabled()) {
       const file = await this.app.vault.create(path, "");
       await this.waitForTemplater(file);
       return file;
     }
 
-    return await this.app.vault.create(path, `${sectionHeading}\n\n`);
+    // Templater auto-trigger off (the vault's default): build a fully-structured
+    // note from the daily-note template so a scrap-created note is identical to a
+    // /daily-kickoff note, instead of a bare section-heading-only note. This must
+    // not assume Templater is installed.
+    const templateFile = this.resolveTemplateFile(templatePath);
+    if (!templateFile) {
+      // No template resolvable (unconfigured / missing file). Fail loudly rather
+      // than silently producing a bare note that misses frontmatter and sections.
+      new Notice(
+        `Scraps: daily-note template not found${
+          templatePath ? ` ("${templatePath}")` : ""
+        }; created a minimal note`,
+      );
+      return await this.app.vault.create(path, `${sectionHeading}\n\n`);
+    }
+
+    const raw = await this.app.vault.read(templateFile);
+
+    // Preferred path: let Templater process the template so every <% %>
+    // expression resolves exactly as /daily-kickoff would.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const templater = this.getTemplaterPlugin();
+    if (templater) {
+      try {
+        const file = await this.app.vault.create(path, raw);
+        await this.overwriteViaTemplater(templater, file);
+        return file;
+      } catch (error) {
+        // Templater is present but its (non-public) API changed or threw. Remove
+        // the note we just created with unprocessed content so we never leave raw
+        // <% %> markup behind, then fall through to the built-in fallback.
+        const partial = this.app.vault.getAbstractFileByPath(path);
+        if (partial instanceof TFile) await this.app.fileManager.trashFile(partial);
+        console.error("Scraps: Templater template rendering failed", error);
+        new Notice("Scraps: template rendering failed; used built-in fallback");
+      }
+    }
+
+    // Templater absent (or the Templater path above failed): substitute the
+    // template's date tokens ourselves. moment().format mirrors Templater's
+    // tp.file.creation_date so the output matches a Templater-rendered note.
+    const { content, unresolved } = renderTemplateFallback(raw, (fmt) => moment().format(fmt));
+    if (unresolved.length > 0) {
+      new Notice(
+        `Scraps: ${unresolved.length} template token(s) could not be resolved; note still contains <% %> markup`,
+      );
+    }
+    return await this.app.vault.create(path, content);
+  }
+
+  private resolveTemplateFile(templatePath: string): TFile | null {
+    if (!templatePath) return null;
+    // Obsidian's daily-note settings store the template path without ".md".
+    const normalized = templatePath.endsWith(".md") ? templatePath : `${templatePath}.md`;
+    const file = this.app.vault.getAbstractFileByPath(normalized);
+    return file instanceof TFile ? file : null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private getTemplaterPlugin(): any {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    return (this.app as any).plugins?.getPlugin?.("templater-obsidian") ?? null;
   }
 
   private isTemplaterAutoEnabled(): boolean {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const templater = (this.app as any).plugins?.getPlugin?.("templater-obsidian");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const templater = this.getTemplaterPlugin();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return !!templater?.settings?.trigger_on_file_creation;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async overwriteViaTemplater(templater: any, file: TFile): Promise<void> {
+    // Templater exposes its engine at `.templater`; overwrite_file_commands
+    // processes the <% %> commands already present in `file` in place (the same
+    // batch path Templater uses for its folder-template-on-create event).
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    await templater.templater.overwrite_file_commands(file);
   }
 
   private waitForTemplater(file: TFile): Promise<void> {
